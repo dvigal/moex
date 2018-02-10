@@ -12,3 +12,5 @@ PyMOEX API runs on Python 3. You'll also need pip.
 
 PyMOEX depends on the following three Python packages:
 > [Pandas](http://pandas.pydata.org/) A powerful data analysis / manipulation library for Python.
+
+# Usage examples

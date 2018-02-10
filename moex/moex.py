@@ -40,8 +40,9 @@ def _xml_to_df(xml, *target_child_id):
     '''
     frames = list()
     for node in xml.getchildren():
-        if node.tag == 'data' and node.attrib and node.attrib.get("id") in target_child_id[0]:
-            frames.append(_parse_data_node(node))
+        if node.tag == 'data':
+            if not target_child_id or node.attrib and node.attrib.get("id") in target_child_id:
+                frames.append(_parse_data_node(node))
 
     return frames
 
@@ -98,6 +99,11 @@ class MOEX(object):
 
     " https://iss.moex.com/iss/turnovers.xml"
 
+    def index(self):
+
+        base_url = "https://iss.moex.com/iss/index.xml"
+        return _xml_to_df(etree.fromstring(_load_url(base_url)))
+
     def turnovers(self):
         """
         URL: https://iss.moex.com/iss/reference/24\n
@@ -107,13 +113,13 @@ class MOEX(object):
         children = ["turnovers", "turnoversprevdate", "turnoverssectors", "turnoverssectorsprevdate"]
         return _xml_to_df(etree.fromstring(_load_url(base_url)), children)
 
-    def enginies(self):
+    def enginies(self, engine=None):
         """
         URL: https://iss.moex.com/iss/reference/40\n
         :return: Pandas DataFrame
         """
-        base_url = "https://iss.moex.com/iss/engines.xml"
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "engines")[0]
+        base_url = "https://iss.moex.com/iss/engines.xml" if engine is None else "https://iss.moex.com/iss/engines/{engine}.xml".format(engine=engine)
+        return _xml_to_df(etree.fromstring(_load_url(base_url)))
 
     def statistics_engines_futures_markets_indicativerates_securities(self, date_start=None, date_end=None):
         """
@@ -133,7 +139,7 @@ class MOEX(object):
                                        "%Y-%m-%d").date() if date_start is not None else datetime.now().date()
 
         date_end = datetime.strptime(date_end, "%Y-%m-%d").date() if date_end is not None else date_start
-        days = max((date_end - date_start).days, 1) + 1
+        days = max((date_end - date_start).days, 1)
 
         def mk_url(date):
             base_url = 'https://iss.moex.com/iss/history/engines/stock/totals/securities.xml'
@@ -245,3 +251,13 @@ class MOEX(object):
         base_url = "https://iss.moex.com/iss/engines/{engine}/markets/{market}/boardgroups.xml".format(engine=engine, market=market)
 
         return _xml_to_df(etree.fromstring(_load_url(base_url)), "boardgroups")[0]
+
+
+if __name__ == "__main__":
+    moex = MOEX()
+
+    data = moex.history_engines_stock_totals_securities(date_start='2018-01-01',
+                                                 secid=['SBER', 'MOEX', 'SNGS', 'AFLT', 'GAZP', 'LKOH', 'GMKN', 'MGNT',
+                                                        'ROSN', 'TATN', 'MTSS', 'VTBR', 'ALRS', 'IRAO'])
+
+    print(data)
