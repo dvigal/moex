@@ -128,7 +128,7 @@ class MOEX(object):
         """
         return None
 
-    def history_engines_stock_totals_securities(self, secid, columns=list(), date_start=None, date_end=None):
+    def history_engines_stock_totals_securities(self, secid, columns: list=None, date_start=None, date_end=None):
         """
         URL /iss/history/engines/stock/totals/securities
         :return: Pandas DataFrame
@@ -152,7 +152,8 @@ class MOEX(object):
             df = _xml_to_df(etree.fromstring(document), "securities")[0]
             df = df[df["BOARDID"] == "MRKT"]
             df = df[df["SECID"].isin(secid)]
-            df = df[columns]
+            if columns is not None:
+                df = df[columns]
             result = pd.concat([result, df])
 
         result.reset_index(drop=True, inplace=True)
@@ -210,7 +211,7 @@ class MOEX(object):
         result.dropna(inplace=True)
         return result
 
-    def history_engines_markets_securities(self, engine, market, boardgroup, *securities, date_start=None, date_end=None, limit=100, start=0, security_collection=None):
+    def history_engines_markets_boardgroup_securities(self, engine, market, boardgroup, *securities, date_start=None, date_end=None, limit=100, start=0, security_collection=None):
         '''
         URL: https://iss.moex.com/iss/reference/29\n
         :return: Pandas DataFrame
@@ -252,12 +253,32 @@ class MOEX(object):
 
         return _xml_to_df(etree.fromstring(_load_url(base_url)), "boardgroups")[0]
 
+    def history_engine_market_security(self, date_start: str, date_end: str, security: str, engine: str="stock", market: str="index"):
+        '''
+        URL: https://iss.moex.com/iss/reference/63
+        :return:
+        '''
 
-if __name__ == "__main__":
-    moex = MOEX()
+        pattern = "https://iss.moex.com/iss/history/engines/{engine}/markets/{market}/securities/{security}".format(engine=engine, market=market, security=security)
+        pattern = pattern + "?from={date_start}&till={date_end}".format(date_start=date_start, date_end=date_end)
 
-    data = moex.history_engines_stock_totals_securities(date_start='2018-01-01',
-                                                 secid=['SBER', 'MOEX', 'SNGS', 'AFLT', 'GAZP', 'LKOH', 'GMKN', 'MGNT',
-                                                        'ROSN', 'TATN', 'MTSS', 'VTBR', 'ALRS', 'IRAO'])
+        history_df, history_cursor_df = _xml_to_df(etree.fromstring(_load_url(pattern)), "history", "history.cursor")
 
-    print(data)
+        result = history_df
+
+        total = int(history_cursor_df["TOTAL"][0])
+        page_size = int(history_cursor_df["PAGESIZE"][0])
+
+        current_page = page_size
+        while True:
+            pattern = pattern + "&start={page}".format(page=current_page)
+            result = pd.concat([result, _xml_to_df(etree.fromstring(_load_url(pattern)), "history")[0]])
+            if current_page > total:
+                break
+            current_page += page_size
+
+        result.reset_index(drop=True, inplace=True)
+        return result
+
+
+
