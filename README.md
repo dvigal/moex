@@ -14,3 +14,7 @@ PyMOEX depends on the following Python packages:
 > [Pandas](http://pandas.pydata.org/) A powerful data analysis / manipulation library for Python.
 
 # Usage examples
+```
+moex = MOEX()
+data = moex.history_engines_stock_totals_securities(date_start='2018-01-01', date_end='2018-08-16', secid=['SBER'])
+```
