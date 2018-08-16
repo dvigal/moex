@@ -34,4 +34,5 @@ sber_weekly["OPEN"].apply(float).plot(figsize=(16,4), title="Weekly", grid=True,
 sber_weekly["HIGH"].apply(float).plot(figsize=(16,4), title="Weekly", grid=True, legend=True)
 sber_weekly["LOW"].apply(float).plot(figsize=(16,4), title="Weekly", grid=True, legend=True)
 sber_weekly["VOLUME"].apply(float).plot(figsize=(16,4), title="Weekly", grid=True, legend=True)
+```
 ![output](https://i.imgur.com/JjyqsZh.png)
