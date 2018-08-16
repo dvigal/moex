@@ -8,7 +8,7 @@ from datetime import timedelta
 
 import pandas as pd
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+# logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 def _parse_data_node(node):
@@ -279,6 +279,11 @@ class MOEX(object):
 
         result.reset_index(drop=True, inplace=True)
         return result
+
+# TODO
+# https://iss.moex.com/iss/reference/35
+# https://iss.moex.com/iss/engines/stock/markets/shares/trades.xml?securities=SBER&date=2018-08-01
+
 
 
 
