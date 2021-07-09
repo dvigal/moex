@@ -253,6 +253,15 @@ class MOEX(object):
 
         return _xml_to_df(etree.fromstring(_load_url(base_url)), "boardgroups")[0]
 
+    def security_specs(self, security_name):
+        '''
+        URL: https://iss.moex.com/iss/reference/13\n
+        :return: Pandas DataFrame
+        '''
+        base_url = "https://iss.moex.com/iss/securities/{security_name}".format(security_name=security_name)
+             
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "boardgroups")[0]
+
     def history_engine_market_security(self, date_start: str, date_end: str, security: str, engine: str="stock", market: str="index"):
         '''
         URL: https://iss.moex.com/iss/reference/63
@@ -283,7 +292,3 @@ class MOEX(object):
 # TODO
 # https://iss.moex.com/iss/reference/35
 # https://iss.moex.com/iss/engines/stock/markets/shares/trades.xml?securities=SBER&date=2018-08-01
-
-
-
-
