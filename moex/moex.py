@@ -10,7 +10,6 @@ import pandas as pd
 
 # logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
-
 def _parse_data_node(node):
     columns = list()
     data = list()
@@ -288,6 +287,15 @@ class MOEX(object):
 
         result.reset_index(drop=True, inplace=True)
         return result
+
+    def current_prices(self):
+        '''
+        https://iss.moex.com/iss/reference/649
+        :return: Pandas DataFrame
+        '''
+        base_url = "https://iss.moex.com/iss/statistics/engines/stock/currentprices.xml"
+             
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "currentprices")
 
 # TODO
 # https://iss.moex.com/iss/reference/35
