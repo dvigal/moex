@@ -295,7 +295,7 @@ class MOEX(object):
         '''
         base_url = "https://iss.moex.com/iss/statistics/engines/stock/currentprices.xml"
              
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "currentprices")
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "currentprices")[0]
 
     def indices(self):
         '''
@@ -304,7 +304,7 @@ class MOEX(object):
         '''
         base_url = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics.xml"
              
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "indices")
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "indices")[0]
 
     def index_securites(self, index):
         '''
@@ -313,7 +313,17 @@ class MOEX(object):
         '''
         base_url = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/{index}.xml".format(index=index)
              
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "analytics")
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "analytics")[0]
+
+    def security_per_day(self, security):
+        '''
+        https://iss.moex.com/iss/reference/147
+        :return: Pandas DataFrame
+        '''
+        base_url = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/tqbr/securities/{security}.xml".format(security=security)
+             
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "marketdata")[0]
+
 
 # TODO
 # https://iss.moex.com/iss/reference/35
