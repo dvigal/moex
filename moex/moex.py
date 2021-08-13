@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 # logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -311,9 +312,15 @@ class MOEX(object):
         https://iss.moex.com/iss/reference/147
         :return: Pandas DataFrame
         '''
-        base_url = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/{index}.xml".format(index=index)
-             
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "analytics")[0]
+        result = pd.DataFrame([])
+        for i in range(0,5):
+            start = i*20
+            base_url = "https://iss.moex.com/iss/statistics/engines/stock/markets/index/analytics/{index}.xml?start={start}".format(index=index, start=start)
+            df = _xml_to_df(etree.fromstring(_load_url(base_url)), "analytics")[0]
+            if df.empty:
+                break
+            result = result.append(df, ignore_index=True)
+        return result
 
     def security_per_day(self, security):
         '''
@@ -322,7 +329,7 @@ class MOEX(object):
         '''
         base_url = "https://iss.moex.com/iss/engines/stock/markets/shares/boards/tqbr/securities/{security}.xml".format(security=security)
              
-        return _xml_to_df(etree.fromstring(_load_url(base_url)), "marketdata")[0]
+        return _xml_to_df(etree.fromstring(_load_url(base_url)), "marketdata")[0][["SECID", "LOW", "HIGH", "OPEN", "LAST", "CLOSEPRICE", "ISSUECAPITALIZATION", "VALTODAY_RUR"]]
 
 
 # TODO
