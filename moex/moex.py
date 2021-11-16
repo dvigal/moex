@@ -331,6 +331,19 @@ class MOEX(object):
              
         return _xml_to_df(etree.fromstring(_load_url(base_url)), "marketdata")[0][["SECID", "LOW", "HIGH", "OPEN", "LAST", "CLOSEPRICE", "ISSUECAPITALIZATION", "VALTODAY_RUR"]]
 
+    def security_per_date(self, security, date):
+        print(security, date)
+        '''
+        https://iss.moex.com/iss/reference/817
+        :return: Pandas DataFrame
+        '''
+        base_url = "http://iss.moex.com/iss/history/engines/stock/markets/shares/boards/tqbr/securities/{security}.xml?date={date}&limit=1".format(security=security, date=date)
+             
+        return _xml_to_df(etree.fromstring(_load_url(base_url)))[0][["SECID", "SHORTNAME", "LOW", "HIGH", "OPEN", "CLOSE", "VALUE"]]
+
+
+moex = MOEX()
+print(moex.security_per_date("SBER", "2020-09-08"))
 
 # TODO
 # https://iss.moex.com/iss/reference/35
