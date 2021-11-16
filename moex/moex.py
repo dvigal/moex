@@ -334,6 +334,7 @@ class MOEX(object):
     def security_per_date(self, security, date):
         print(security, date)
         '''
+        date format: YYYY-MM-DD
         https://iss.moex.com/iss/reference/817
         :return: Pandas DataFrame
         '''
@@ -341,9 +342,6 @@ class MOEX(object):
              
         return _xml_to_df(etree.fromstring(_load_url(base_url)))[0][["SECID", "SHORTNAME", "LOW", "HIGH", "OPEN", "CLOSE", "VALUE"]]
 
-
-moex = MOEX()
-print(moex.security_per_date("SBER", "2020-09-08"))
 
 # TODO
 # https://iss.moex.com/iss/reference/35
