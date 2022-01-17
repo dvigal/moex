@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    version='0.0.2',
+    version='0.0.3',
     name='pymoex',
     description='Unofficial ISS MOEX API on Python',
     url='https://github.com/ntcny/moex',
